@@ -11,7 +11,8 @@ class WorkLogSerializer(serializers.ModelSerializer):
         # extra_kwargs = {"date": {"required": False}}
 
 
--TaskSerializer(serializers.ModelSerializer):
+
+class TaskSerializer(serializers.ModelSerializer):
     # work_log_Test = WorkLogSerializer(read_only=True, many=True)
 
     class Meta:
