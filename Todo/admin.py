@@ -1,7 +1,11 @@
 from django.contrib import admin
-from .models import WorkLog, Task
+from .models import work_log, Task
 
 # Register your models here.
 
-admin.site.register(WorkLog)
+admin.site.register(work_log)
 admin.site.register(Task)
+
+# @admin.register(work_log)
+# class TodoAdmin(admin.ModelAdmin):
+#     pass
