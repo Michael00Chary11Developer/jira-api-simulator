@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import work_log, Task
+from .models import WorkLog, Task
 
 # Register your models here.
 
-admin.site.register(work_log)
+admin.site.register(WorkLog)
 admin.site.register(Task)
