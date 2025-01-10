@@ -1,6 +1,7 @@
 #ignore venv
 MasterVenv
 master_env
+MichGira
 
 #ignore db
 db.sqlite3
