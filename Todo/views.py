@@ -24,7 +24,6 @@ class ListViewApiView(APIView):
     def post(self, request: Request):
         try:
             data = request.data
-            # serializer = WorkLogSerializer(data=data)
             serializer = TaskSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
@@ -32,19 +31,13 @@ class ListViewApiView(APIView):
             else:
                 logging.error("Validation error: %s", serializer.errors)
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-                # logging.error("validation error:%s", serializer.errors)
-                # logging.error(traceback.format_exc())
-                # return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            # logging.error(traceback.format_exc())
-            # return Response(None, status.HTTP_400_BAD_REQUEST)
             logging.error(traceback.format_exc())
             return Response({'detail': str(ex)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class GetTaskByObjectById:
     def get_task_by_id(self, task_id: int):
-        # task = Task.objects.filter(pk=task_id)
         try:
             task = Task.objects.get(pk=task_id)
             return task
@@ -53,14 +46,6 @@ class GetTaskByObjectById:
 
 
 class DetailViewApiView(APIView, GetTaskByObjectById):
-    # DetailViewApiView.get_task_by_id() missing 1 required positional argument: 'request'
-    # def get_task_by_id(self, request: Request, task_id: int):
-    #     task = Task.objects.filter(pk=task_id)
-    #     try:
-    #         task = Task.objects.get(pk=task_id)
-    #         return task
-    #     except Task.DoesNotExist:
-    #         return Response(None, status.HTTP_204_NO_CONTENT)
 
     def get(self, request: Request, task_id: int):
         try:
@@ -159,89 +144,3 @@ class DetailApiViewAddWorkLog(APIView, GetTaskByObjectById):
         except WorkLog.DoesNotExist:
             return Response({'detail': 'WorkLog not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# class DetailApiViewAddWorkLog(APIView, GetTaskByObjectById):
-    # def get(self, request: Request, task_id: int):
-    #     try:
-    #         # work_log = WorkLog.objects.get(pk=work_log_id)
-    #         task = self.get_task_by_id(task_id=task_id)
-    #         serializer = TaskSerializer(task)
-    #         return Response(serializer.data, status.HTTP_202_ACCEPTED)
-    #     except:
-    #         status.HTTP_400_BAD_REQUEST
-
-    # def post(self, request: Request, task_id: int):
-    #     try:
-
-    #         try:
-    #             task = self.get_task_by_id(pk=task_id)
-    #         except Task.DoesNotExist:
-    #             logging.error("detail:%s", "Not Found by this id!!")
-    #             return Response(None, status.HTTP_204_NO_CONTENT)
-
-    #         data = request.data.copy()
-    #         data["task"] = task_id
-    #         serializer = WorkLogSerializer(data)
-
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return Response(serializer.data, status.HTTP_201_CREATED)
-    #         else:
-    #             logging.error("validation error:%s", serializer.errors)
-    #             return Response(None, status.HTTP_400_BAD_REQUEST)
-    #     except Exception as ex:
-    #         logging.error({"deatil": str(ex)},
-    #                       status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # def put(self, request: Request, task_id: int, work_log_id: int):
-    #     # exist task or not
-    #     try:
-    #         task = self.get_task_by_id(task_id=task_id)
-    #     except:
-    #         logging.error("validation error:%s", "Not found task!")
-    #         return Response(None, status.HTTP_400_BAD_REQUEST)
-
-    #     try:
-    #         work_log = WorkLog.objects.get(pk=work_log_id)
-    #     except:
-    #         logging.error("Validation error Not found work_log")
-    #         return Response(None, status.HTTP_400_BAD_REQUEST)
-    #     serializer = WorkLogSerializer(request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status.HTTP_202_ACCEPTED)
-    #     return Response(None, status.HTTP_400_BAD_REQUEST)
-
-    # def delete(self, request: Request, task_id: int, work_log_id: int):
-    #     try:
-    #         task = self.get_task_by_id(task_id=task_id)
-    #     except:
-    #         logging.error("validation error! Not found task")
-    #         return Response(None, status.HTTP_400_BAD_REQUEST)
-    #     try:
-    #         work_log = WorkLog.objects.get(pk=work_log_id)
-    #         work_log.delete()
-    #         return Response(None, status.HTTP_508_LOOP_DETECTED)
-    #     except:
-    #         logging.error("Not Found worklog")
-    #         return Response(None, status.HTTP_400_BAD_REQUEST)
-
-  # def post(self, request: Request, work_log_id=int):
-    #     try:
-    #         data = request.data
-    #         task = self.get_task_by_id(pk=work_log_id)
-    #         serializer = WorkLogSerializer(data=data)
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return Response(serializer.data, status.HTTP_201_CREATED)
-    #         else:
-    #             logging.error(traceback.format_exc())
-    #             return Response(None, status.HTTP_400_BAD_REQUEST)
-    #     except:
-    #         logging.error(traceback.format_exc())
-    #         return Response(None, status.HTTP_400_BAD_REQUEST)
-
-    # def put(self, request: Request, task_id: int):
-    #     try:
-    #     except Exception as ex:
-    #         logging.error(traceback.format_exc)
-    #         return Response({"detail:": ex}, status.HTTP_204_NO_CONTENT)

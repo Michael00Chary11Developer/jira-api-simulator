@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 
 class Task(models.Model):
 
-    # status_choice = [('Not started'), ('Done'), ("InProgeress")]
-
     id = models.AutoField(primary_key=True)
     ticket_id = models.IntegerField(blank=False)
     title = models.CharField(max_length=250, blank=False)
