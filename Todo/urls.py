@@ -1,19 +1,11 @@
 from django.urls import path, include
-from . import views
-from rest_framework.routers import DefaultRouter
-from .views import TaskViewSet
-
-router = DefaultRouter()
-router.register('', TaskViewSet)
-
+from .views import ListViewApiView, DetailViewApiView, ListMixinApi
 
 urlpatterns = [
-    path("get/", views.GetTask.as_view(), name='get'),
-    path("all_task", views.all_task, name="get2"),
-    path("all_work/", views.all_work_log),
-    path('viewsets/', include(router.urls)),
-    path("all_work_log/", views.all_work_log, name="work"),
-    # path("get/",views.GetTaskViewSet.as_view(),name='viewsets')
-    # path("viewsets/", include(router.urls))
-    # path("post/", , name='post')
+    # path("get_all/", ListViewApiView.as_view(), name='get_all'),
+    # path("post/",ListViewApiView.as_view(),name='post'),
+    path("ListView/", ListViewApiView.as_view(), name="ListView"),
+    path("DetailListView/<int:task_id>/",
+         DetailViewApiView.as_view(), name="DetailListView"),
+    path("MixinListView/", ListMixinApi.as_view(), name='MixinListView'),
 ]

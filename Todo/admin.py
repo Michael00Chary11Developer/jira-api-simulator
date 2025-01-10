@@ -5,7 +5,3 @@ from .models import work_log, Task
 
 admin.site.register(work_log)
 admin.site.register(Task)
-
-# @admin.register(work_log)
-# class TodoAdmin(admin.ModelAdmin):
-#     pass

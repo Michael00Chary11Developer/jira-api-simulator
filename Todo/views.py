@@ -1,58 +1,81 @@
+import logging
+import traceback
 from django.shortcuts import render
-from .models import Task, work_log
-from rest_framework import generics, viewsets
-from .serializers import WorkLogSerializer, TaskSerialier
-from rest_framework.decorators import api_view
-from rest_framework.request import Request
+from rest_framework.views import APIView
+from .models import Task
+from .serializers import TaskSerializer, WorkLogSerializer
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework import status
+from rest_framework import mixins, generics
+
+class ListViewApiView(APIView):
+
+    def get(self, requset: Request):
+        task = Task.objects.all()
+        serializer = TaskSerializer(task, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def post(self, request: Request):
+        try:
+            data = request.data
+            serializer = WorkLogSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status.HTTP_201_CREATED)
+            else:
+                logging.error(traceback.format_exc())
+                return Response(None, status.HTTP_400_BAD_REQUEST)
+        except:
+            logging.error(traceback.format_exc())
+            return Response(None, status.HTTP_400_BAD_REQUEST)
 
 
-# Create your views here.
+class DetailViewApiView(APIView):
+    # DetailViewApiView.get_object_by_id() missing 1 required positional argument: 'request'
+    # def get_object_by_id(self, request: Request, task_id: int):
+    #     task = Task.objects.filter(pk=task_id)
+    #     try:
+    #         task = Task.objects.get(pk=task_id)
+    #         return task
+    #     except Task.DoesNotExist:
+    #         return Response(None, status.HTTP_204_NO_CONTENT)
+    def get_object_by_id(self, task_id: int):
+        task = Task.objects.filter(pk=task_id)
+        try:
+            task = Task.objects.get(pk=task_id)
+            return task
+        except Task.DoesNotExist:
+            return Response(None, status.HTTP_204_NO_CONTENT)
 
-# generics
+    def get(self, request: Request, task_id: int):
+        task = self.get_object_by_id(task_id=task_id)
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def put(self, request: Request, task_id: int):
+        task = self.get_object_by_id(task_id=task_id)
+        serializer = TaskSerializer(task, request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_202_ACCEPTED)
+        return Response(None, status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request: Request, task_id: int):
+        task = self.get_object_by_id(task_id=task_id)
+        if task is not None:
+            task.delete()
+            return Response(None, status.HTTP_508_LOOP_DETECTED)
+        return Response(None, status.HTTP_204_NO_CONTENT)
 
 
-class GetTask(generics.GenericAPIView):
+# region mixins
+class ListMixinApi(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = Task.objects.all()
-    serializer_class = TaskSerialier
+    serializer_class = TaskSerializer
 
+    def get(self, request: Request):
+        return self.list(request)
 
-# viewset
-class GetTaskViewSet(viewsets.ViewSet):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerialier
-
-
-@api_view(['GET', 'POST'])
-def all_task(request: Request):
-    if request.method == 'GET':
-        todos = Task.objects.all()
-        todo_serializer = TaskSerialier(todos, many=True)
-        return Response(todo_serializer.data, status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serailizer = TaskSerialier(data=request.data)
-        if serailizer.is_valid():
-            serailizer.save()
-            return Response(serailizer.data, status.HTTP_201_CREATED)
-    return Response(None, status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'POST'])
-def all_work_log(request: Request):
-    if request.method == 'GET':
-        todos = work_log.objects.all()
-        todo_serializer = WorkLogSerializer(todos, many=True)
-        return Response(todo_serializer.data, status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serailizer = WorkLogSerializer(data=request.data)
-        if serailizer.is_valid():
-            serailizer.save()
-            return Response(serailizer.data, status.HTTP_201_CREATED)
-    return Response(None, status.HTTP_400_BAD_REQUEST)
-
-
-     
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerialier
+    def post(self, request: Request):
+        return self.create(request)
